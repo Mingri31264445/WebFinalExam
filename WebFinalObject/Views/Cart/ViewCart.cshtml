@@ -1,0 +1,46 @@
+﻿@model List<WebFinalExam.Models.CartItem>
+
+@{
+    ViewData["Title"] = "購物車";
+    var total = Model.Sum(item => item.Price * item.Quantity);
+}
+
+<h2>購物車內容</h2>
+
+@if (Model.Count == 0)
+{
+    <p>購物車是空的。</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>圖片</th>
+                <th>名稱</th>
+                <th>價格</th>
+                <th>數量</th>
+                <th>小計</th>
+            </tr>
+        </thead>    
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><img src="@item.ImageUrl" width="100" /></td>
+                    <td>@item.Name</td>
+                    <td>@item.Price.ToString("N0")元</td>
+                    <td>@item.Quantity</td>
+                    <td>@((item.Price * item.Quantity).ToString("N0"))元</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="fixed-bottom bg-light border-top p-3 d-flex justify-content-between align-items-center">
+        <div class="fw-bold fs-5">總金額：@Model.Sum(item => item.Price * item.Quantity).ToString("N0") 元</div>
+        <form method="post" asp-action="Checkout">
+            <button type="submit" class="btn btn-success">結帳</button>
+        </form>
+    </div>
+}

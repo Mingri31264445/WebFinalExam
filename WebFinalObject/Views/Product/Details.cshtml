@@ -1,0 +1,20 @@
+﻿@model WebFinalExam.Models.Product
+
+@{
+    ViewBag.Title = Model.Name;
+}
+
+<h2>@Model.Name</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <img src="@Model.ImageUrl" class="img-fluid" alt="@Model.Name" />
+    </div>
+    <div class="col-md-6">
+        <p><strong>價格：</strong> @Model.Price.ToString("N0") 元</p>
+        <p><strong>庫存：</strong> @Model.Stock</p>
+        <p><strong>分類：</strong> @Model.Category</p>
+        <p>@Model.Description</p>
+        <a href="@Url.Action("AddToCart", "Cart", new { id = Model.Id })" class="btn btn-primary">加入購物車</a>
+    </div>
+</div>
