@@ -1,18 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WebFinalExam.Models;
-using WebFinalExam.Extensions;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebFinalExam.Extensions;
+using WebFinalExam.Models;
+using WebFinalObject.Data;
 
 
 namespace WebFinalObject.Controllers
 {
     public class CartController : Controller
     {
-        private readonly ProductsDB _context;
-        public CartController(ProductsDB context)
+        private readonly ProductsDB _prdCtx;
+        private readonly ApplicationDbContext _appCtx;
+        public CartController(ProductsDB prdCtx, ApplicationDbContext appCtx)
         {
-            _context = context;
+            _prdCtx = prdCtx;     // 操作 Product、扣庫存
+            _appCtx = appCtx;     // 寫入 Order / OrderDetail
         }
 
         public IActionResult Test()
@@ -25,7 +28,7 @@ namespace WebFinalObject.Controllers
         public IActionResult AddToCart(int id)
         {
             // 從資料庫找出商品
-            var product = _context.Product.FirstOrDefault(p => p.Id == id);
+            var product = _prdCtx.Product.FirstOrDefault(p => p.Id == id);
             if (product == null)
                 return NotFound();
 
@@ -67,13 +70,21 @@ namespace WebFinalObject.Controllers
             if (!cart.Any())
             {
                 TempData["Message"] = "購物車是空的！";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("ViewCart");
             }
+
+            // 建立訂單主檔
+            var order = new Order
+            {
+                BuyerId = User.FindFirstValue(ClaimTypes.NameIdentifier)!,
+                OrderDate = DateTime.UtcNow,
+                TotalAmount = cart.Sum(c => c.Price * c.Quantity)
+            };
 
             // 2. 逐筆處理
             foreach (var item in cart)
             {
-                var product = _context.Product.FirstOrDefault(p => p.Id == item.ProductId);
+                var product = _prdCtx.Product.FirstOrDefault(p => p.Id == item.ProductId);
                 if (product == null)
                 {
                     TempData["Message"] = $"找不到商品 {item.ProductId}";
@@ -89,10 +100,19 @@ namespace WebFinalObject.Controllers
 
                 // 4. 扣庫存
                 product.Stock -= item.Quantity;
+
+                order.Details.Add(new OrderDetail
+                {
+                    ProductId = product.Id,
+                    Quantity = item.Quantity,
+                    UnitPrice = product.Price
+                });
             }
 
-            // 5. 寫入資料庫
-            _context.SaveChanges();
+            // d. 寫入 Order & OrderDetail，Product 庫存已在 _prdCtx 上修改
+            _appCtx.Order.Add(order);
+            _appCtx.SaveChanges();   // 寫 Order / OrderDetail
+            _prdCtx.SaveChanges();   // 寫 Product 庫存
 
             // 6. 清空購物車並回首頁
             HttpContext.Session.Remove("Cart");

@@ -1,11 +1,11 @@
-﻿@model WebFinalExam.Models.Product
+﻿@model WebFinalExam.Models.ViewModels.ProductInputVM
 @{
     ViewBag.Title = "新增商品";
 }
 
 <h2>新增商品</h2>
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
+<form asp-action="Create" enctype="multipart/form-data" method="post">
     <div class="mb-3">
         <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
@@ -33,9 +33,13 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="ImageUrl" class="form-label"></label>
-        <input asp-for="ImageUrl" class="form-control" />
+        <label asp-for="ImageFile" class="form-label">上傳圖片</label>
+        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" onchange="preview(this)">
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
     </div>
+    
+    <!-- 預覽縮圖：若 Model.ImageUrl 為 null 就用占位圖 -->
+    <img id="previewImg" src="@(Model?.ImageUrl ?? "/images/placeholder.png")" style="max-width:160px;">
 
     <button type="submit" class="btn btn-success">儲存</button>
     <a asp-action="MyStore" class="btn btn-secondary">取消</a>
@@ -43,4 +47,16 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <!-- 圖片即時預覽 -->
+    <script>
+        function preview(input){
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById('previewImg').src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 }
+

@@ -1,11 +1,11 @@
-﻿@model WebFinalExam.Models.Product
+﻿@model WebFinalExam.Models.ViewModels.ProductInputVM
 @{
     ViewBag.Title = "編輯商品";
 }
 
 <h2>編輯商品</h2>
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
+<form asp-action="Edit" enctype="multipart/form-data" method="post">
     <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
@@ -34,9 +34,15 @@
         <input asp-for="Category" class="form-control" />
     </div>
 
+    <!-- 圖片預覽／舊圖 -->
+    <img id="previewImg"
+         src="@(Model?.ImageUrl ?? "/images/placeholder.png")"
+         style="max-width:150px;" />
+
     <div class="mb-3">
-        <label asp-for="ImageUrl" class="form-label"></label>
-        <input asp-for="ImageUrl" class="form-control" />
+        <label asp-for="ImageFile" class="form-label">上傳新圖片（可選）</label>
+        <input asp-for="ImageFile" type="file" class="form-control" />
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">儲存</button>
@@ -45,4 +51,15 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function preview(input){
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById('previewImg').src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+
 }

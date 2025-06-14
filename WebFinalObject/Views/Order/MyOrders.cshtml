@@ -1,0 +1,48 @@
+﻿@model IEnumerable<WebFinalExam.Models.Order>
+
+@{
+    ViewBag.Title = "訂單紀錄";
+}
+
+<h2 class="mb-3">我的訂單紀錄</h2>
+
+@if (!Model.Any())
+{
+    <p>尚無任何訂單。</p>
+}
+else
+{
+    foreach (var order in Model)
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong>訂單編號：</strong>@order.OrderId
+                &nbsp;|&nbsp; <strong>下單時間：</strong>@order.OrderDate.ToLocalTime()
+                &nbsp;|&nbsp; <strong>總金額：</strong>@order.TotalAmount.ToString("C0")
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>商品</th>
+                            <th>數量</th>
+                            <th class="text-end">單價</th>
+                            <th class="text-end">小計</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in order.Details)
+                        {
+                            <tr>
+                                <td>@d.Product!.Name</td>
+                                <td>@d.Quantity</td>
+                                <td class="text-end">@d.UnitPrice.ToString("C0")</td>
+                                <td class="text-end">@((d.UnitPrice * d.Quantity).ToString("C0"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
