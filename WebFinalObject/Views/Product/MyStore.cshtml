@@ -1,0 +1,45 @@
+﻿@model IEnumerable<WebFinalExam.Models.Product>
+@{
+    ViewBag.Title = "我的賣場";
+}
+
+<h2>我的賣場</h2>
+<a asp-action="Create" class="btn btn-success mb-3">新增商品</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>名稱</th>
+            <th>價格</th>
+            <th>庫存</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Name</td>
+                <td>@p.Price.ToString("N0")</td>
+                <td>@p.Stock</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-primary">編輯</a>
+                    <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-sm btn-danger">刪除</a>
+                </td>
+                <td>
+                    @if (p.IsActive)
+                    {
+                        <span class="badge text-bg-success">上架</span>
+                        <a asp-action="Toggle" asp-route-id="@p.Id" class="btn btn-warning btn-sm">下架</a>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-secondary">已下架</span>
+                        <a asp-action="Toggle" asp-route-id="@p.Id" class="btn btn-success btn-sm">重新上架</a>
+                    }
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

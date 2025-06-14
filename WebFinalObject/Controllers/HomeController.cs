@@ -15,7 +15,10 @@ namespace WebFinalExam.Controllers
 
         public IActionResult Index()
         {
-            var products = _context.Product.ToList();
+            var products = _context.Product
+                           .Where(p => p.IsActive)// 只取上架的商品
+                           .OrderByDescending(p => p.Id)
+                           .ToList();
             return View(products);
         }
 
