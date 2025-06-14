@@ -26,6 +26,19 @@
                     <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-primary">編輯</a>
                     <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-sm btn-danger">刪除</a>
                 </td>
+                <td>
+                    @if (p.IsActive)
+                    {
+                        <span class="badge text-bg-success">上架</span>
+                        <a asp-action="Toggle" asp-route-id="@p.Id" class="btn btn-warning btn-sm">下架</a>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-secondary">已下架</span>
+                        <a asp-action="Toggle" asp-route-id="@p.Id" class="btn btn-success btn-sm">重新上架</a>
+                    }
+                </td>
+
             </tr>
         }
     </tbody>

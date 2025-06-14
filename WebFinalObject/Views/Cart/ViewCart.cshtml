@@ -5,6 +5,11 @@
     var total = Model.Sum(item => item.Price * item.Quantity);
 }
 
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">@TempData["Message"]</div>
+}
+
 <h2>購物車內容</h2>
 
 @if (Model.Count == 0)
@@ -32,6 +37,16 @@ else
                     <td>@item.Price.ToString("N0")元</td>
                     <td>@item.Quantity</td>
                     <td>@((item.Price * item.Quantity).ToString("N0"))元</td>
+                    <td>
+                        <a asp-action="RemoveFromCart"
+                           asp-controller="Cart"
+                           asp-route-id="@item.ProductId"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('確定移除？');">
+                           -
+                        </a>
+                    </td>
+
                 </tr>
             }
         </tbody>

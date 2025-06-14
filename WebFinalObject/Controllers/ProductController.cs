@@ -83,6 +83,9 @@ namespace WebFinalExam.Controllers
             product.Stock = vm.Stock;
             product.Category = vm.Category;
 
+            // 更新 IsActive 狀態：若庫存大於 0 則上架，否則下架
+            product.IsActive = product.Stock > 0;
+
             _context.SaveChanges();
             return RedirectToAction("MyStore");
         }
@@ -161,11 +164,28 @@ namespace WebFinalExam.Controllers
             }
 
             var product = vm.ToProduct(imgUrl);
+
+            product.IsActive = true;// 新增商品預設為上架
             product.SellerId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             _context.Product.Add(product);
             _context.SaveChanges();
             return RedirectToAction("MyStore");
         }
+
+        //使用者上下架自己賣場的某個商品
+        [Authorize]
+        public IActionResult Toggle(int id)
+        {
+            var product = _context.Product.FirstOrDefault(p => p.Id == id);
+            if (product == null || product.SellerId != User.FindFirstValue(ClaimTypes.NameIdentifier))// 確認商品存在且是自己的
+                return Forbid();
+
+            product.IsActive = !product.IsActive;
+            _context.SaveChanges();
+            return RedirectToAction("MyStore");
+        }
+
 
     }
 }

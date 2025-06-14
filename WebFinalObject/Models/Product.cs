@@ -22,6 +22,7 @@ namespace WebFinalExam.Models
 
         public string SellerId { get; set; } = string.Empty;
         public IdentityUser? Seller { get; set; }     // 導覽屬性
+        public bool IsActive { get; set; } = true;  //是否上架
 
     }
 }
