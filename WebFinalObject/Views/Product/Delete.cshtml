@@ -1,0 +1,12 @@
+﻿@model WebFinalExam.Models.Product
+@{
+    ViewBag.Title = "刪除商品";
+}
+
+<h3>確定要刪除「@Model.Name」嗎？</h3>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">刪除</button>
+    <a asp-action="MyStore" class="btn btn-secondary">取消</a>
+</form>

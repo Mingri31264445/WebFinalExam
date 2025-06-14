@@ -39,8 +39,9 @@ else
 
     <div class="fixed-bottom bg-light border-top p-3 d-flex justify-content-between align-items-center">
         <div class="fw-bold fs-5">總金額：@Model.Sum(item => item.Price * item.Quantity).ToString("N0") 元</div>
-        <form method="post" asp-action="Checkout">
+        <form asp-action="Checkout" asp-controller="Cart" method="post">
             <button type="submit" class="btn btn-success">結帳</button>
         </form>
+
     </div>
 }

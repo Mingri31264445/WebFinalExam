@@ -2,6 +2,7 @@
 using WebFinalExam.Models;
 using WebFinalExam.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 namespace WebFinalObject.Controllers
@@ -55,13 +56,47 @@ namespace WebFinalObject.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpPost]
+        [Authorize]                               // 確保登入才可結帳
+        [HttpPost]                                // 表單或按鈕以 POST 呼叫
         public IActionResult Checkout()
         {
-            // 結帳：清空購物車
+            // 1. 取出 Session 購物車
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart")
+                       ?? new List<CartItem>();
+
+            if (!cart.Any())
+            {
+                TempData["Message"] = "購物車是空的！";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // 2. 逐筆處理
+            foreach (var item in cart)
+            {
+                var product = _context.Product.FirstOrDefault(p => p.Id == item.ProductId);
+                if (product == null)
+                {
+                    TempData["Message"] = $"找不到商品 {item.ProductId}";
+                    return RedirectToAction("ViewCart");
+                }
+
+                // 3. 檢查庫存
+                if (product.Stock < item.Quantity)
+                {
+                    TempData["Message"] = $"{product.Name} 庫存不足（剩 {product.Stock} 件）";
+                    return RedirectToAction("ViewCart");
+                }
+
+                // 4. 扣庫存
+                product.Stock -= item.Quantity;
+            }
+
+            // 5. 寫入資料庫
+            _context.SaveChanges();
+
+            // 6. 清空購物車並回首頁
             HttpContext.Session.Remove("Cart");
             TempData["Message"] = "結帳成功，感謝您的購買！";
-
             return RedirectToAction("Index", "Home");
         }
 
