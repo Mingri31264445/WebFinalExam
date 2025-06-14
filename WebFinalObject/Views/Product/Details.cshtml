@@ -15,6 +15,24 @@
         <p><strong>庫存：</strong> @Model.Stock</p>
         <p><strong>分類：</strong> @Model.Category</p>
         <p>@Model.Description</p>
-        <a href="@Url.Action("AddToCart", "Cart", new { id = Model.Id })" class="btn btn-primary">加入購物車</a>
+        <form asp-action="AddToCart"
+              asp-controller="Cart"
+              method="post"
+              class="d-flex align-items-end"
+              style="gap:1rem;">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div>
+                <label for="qty" class="form-label">數量</label>
+                <input id="qty"
+                       name="qty"
+                       type="number"
+                       class="form-control"
+                       value="1"
+                       min="1"
+                       max="@Model.Stock" />
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">加入購物車</button>
+            @Html.AntiForgeryToken()
+        </form>
     </div>
 </div>

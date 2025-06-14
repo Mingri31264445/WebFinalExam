@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WebFinalExam.Extensions;
 using WebFinalExam.Models;
@@ -23,6 +24,7 @@ namespace WebFinalObject.Controllers
             return Content("Test OK");
         }
 
+        // GET：列表用，永遠 +1
         [Authorize]
         [HttpGet]
         public IActionResult AddToCart(int id)
@@ -60,6 +62,39 @@ namespace WebFinalObject.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        //POST：詳情頁用，可自訂 qty
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddToCart(int id, int qty = 1)
+        {
+            if (qty < 1) qty = 1;
+
+            var product = _prdCtx.Product.FirstOrDefault(p => p.Id == id);
+            if (product == null) return NotFound();
+
+            var cart = HttpContext.Session
+                       .GetObjectFromJson<List<CartItem>>(GetCartKey())
+                       ?? new List<CartItem>();
+
+            var item = cart.FirstOrDefault(c => c.ProductId == id);
+            if (item != null)
+                item.Quantity += qty; // 直接累加
+            else
+                cart.Add(new CartItem // 新增新列
+                {
+                    ProductId = product.Id,
+                    Name = product.Name,
+                    Price = product.Price,
+                    ImageUrl = product.ImageUrl,
+                    Quantity = qty
+                });
+
+            HttpContext.Session.SetObjectAsJson(GetCartKey(), cart);
+            TempData["Message"] = "已加入購物車！";
+            return RedirectToAction("Index", "Home");   // 回首頁
+        }
+
 
         [Authorize]                               // 確保登入才可結帳
         [HttpPost]                                // 表單或按鈕以 POST 呼叫
