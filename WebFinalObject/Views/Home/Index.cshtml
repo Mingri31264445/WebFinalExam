@@ -1,7 +1,10 @@
 ﻿@model List<WebFinalExam.Models.Product>
+@using System.Collections.Generic
 
 @{
     ViewBag.Title = "首頁";
+    var cats = (ViewBag.Categories as IEnumerable<string>)
+               ?? Enumerable.Empty<string>();   // 給空集合
 }
 
 @if (TempData["Message"] != null)
@@ -9,25 +12,33 @@
     <div class="alert alert-success">@TempData["Message"]</div>
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">最新商品</h2>
-    <a href="/Cart/ViewCart" class="btn btn-primary">前往購物車</a>
-</div>
+<div class="d-flex">
+    <aside style="min-width:220px;" class="border-end pe-2">
+        <partial name="_CategoryList" model="cats" />
+    </aside>
 
-<div class="row">
-    @foreach (var product in Model)
-    {
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <a href="@Url.Action("Details", "Product", new { id = product.Id })">
-                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height:200px; object-fit:contain; background:#fff;">
-                </a>
-                <div class="card-body">
-                    <h5>@product.Name</h5>
-                    <p class="text-danger">@product.Price.ToString("C")</p>
-                    <a href="@Url.Action("AddToCart", "Cart", new { id = product.Id })" class="btn btn-primary">加入購物車</a>
-                </div>
-            </div>  
+    <div class="flex-grow-1 ps-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">最新商品</h2>
+            <a href="/Cart/ViewCart" class="btn btn-primary">前往購物車</a>
         </div>
-    }
+
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <a href="@Url.Action("Details", "Product", new { id = product.Id })">
+                            <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height:200px; object-fit:contain; background:#fff;">
+                        </a>
+                        <div class="card-body">
+                            <h5>@product.Name</h5>
+                            <p class="text-danger">@product.Price.ToString("C")</p>
+                            <a href="@Url.Action("AddToCart", "Cart", new { id = product.Id })" class="btn btn-primary">加入購物車</a>
+                        </div>
+                    </div>  
+                </div>
+            }
+        </div>
+    </div>
 </div>

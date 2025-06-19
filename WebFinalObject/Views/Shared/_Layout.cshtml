@@ -18,12 +18,9 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         @if (User.Identity!.IsAuthenticated)//@if 是在檢查使用者是否已登入（IsAuthenticated 為 true）
                         {
@@ -32,20 +29,22 @@
                                 asp-controller="Product"
                                 asp-action="MyStore">我的賣場</a>
                             </li>
-                        }
-
-                        @if (User.Identity.IsAuthenticated)
-                        {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Order" asp-action="SellerOrders">賣家訂單</a>
                             </li>
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        @if (User.Identity.IsAuthenticated)
+                        {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Order" asp-action="MyOrders">訂單紀錄</a>
                             </li>
                         }
 
-                    </ul>
                     <partial name="_LoginPartial" />
+                    </ul>
                 </div>
             </div>
         </nav>

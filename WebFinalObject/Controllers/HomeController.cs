@@ -19,6 +19,15 @@ namespace WebFinalExam.Controllers
                            .Where(p => p.IsActive)// 只取上架的商品
                            .OrderByDescending(p => p.Id)
                            .ToList();
+
+            // 只抓「目前上架商品」的分類
+            ViewBag.Categories = _context.Product
+                                     .Where(p => p.IsActive)
+                                     .Select(p => p.Category)
+                                     .Distinct()
+                                     .OrderBy(c => c)
+                                     .ToList();
+
             return View(products);
         }
 
