@@ -5,7 +5,9 @@
     ViewBag.Title = "首頁";
     var cats = (ViewBag.Categories as IEnumerable<string>)
                ?? Enumerable.Empty<string>();   // 給空集合
+    var hot = (ViewBag.HotProducts as List<WebFinalExam.Models.Product>) ?? new List<WebFinalExam.Models.Product>();
 }
+
 
 @if (TempData["Message"] != null)
 {
@@ -18,6 +20,35 @@
     </aside>
 
     <div class="flex-grow-1 ps-3">
+
+        <!-- ★ 熱門商品 (若有資料才顯示) -->
+        @if (hot.Any())
+        {
+            <h2 class="mb-2 text-danger">熱門商品</h2>
+            <div class="row mb-4">
+                @foreach (var p in hot)
+                {
+                    <div class="col-md-4">
+                        <div class="card mb-3 shadow-sm border-danger">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id">
+                                <img src="@p.ImageUrl"
+                                     class="card-img-top"
+                                     style="height:200px; object-fit:contain; background:#fff;" />
+                            </a>
+                            <div class="card-body">
+                                <h5>@p.Name</h5>
+                                <p class="text-danger">@p.Price.ToString("C")</p>
+                                <a asp-controller="Cart"
+                                   asp-action="AddToCart"
+                                   asp-route-id="@p.Id"
+                                   class="btn btn-danger">立即購買</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="mb-0">最新商品</h2>
             <a href="/Cart/ViewCart" class="btn btn-primary">前往購物車</a>
