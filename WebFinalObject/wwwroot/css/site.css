@@ -20,3 +20,29 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* 僅限首頁廣告輪播 */
+#adCarousel .carousel-control-prev,
+#adCarousel .carousel-control-next {
+    /* 黑色半透明圓底 */
+    width: 48px; /* 圓形大小 */
+    height: 48px;
+    top: 50%; /* 垂直置中 */
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.45);
+    border-radius: 50%;
+    opacity: 1; /* 永遠可見；想要 Hover 才顯示就改成 .5 */
+}
+
+/* 把 Bootstrap 預設的灰箭頭→白箭頭 */
+#adCarousel .carousel-control-prev-icon,
+#adCarousel .carousel-control-next-icon {
+    filter: invert(1); /* 反色，灰 → 白 */
+    /* 或改用 background-image 換成自訂 SVG / PNG 也可 */
+}
+
+/* Hover 時再亮一點（可選） */
+#adCarousel .carousel-control-prev:hover,
+#adCarousel .carousel-control-next:hover {
+    background: rgba(0,0,0,0.65);
+}
