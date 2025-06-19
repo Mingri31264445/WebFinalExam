@@ -1,33 +1,111 @@
 ﻿@model List<WebFinalExam.Models.Product>
+@using System.Collections.Generic
 
 @{
     ViewBag.Title = "首頁";
+    var cats = (ViewBag.Categories as IEnumerable<string>)
+               ?? Enumerable.Empty<string>();   // 給空集合
+    var hot = (ViewBag.HotProducts as List<WebFinalExam.Models.Product>) ?? new List<WebFinalExam.Models.Product>();
 }
+
 
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-success">@TempData["Message"]</div>
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">最新商品</h2>
-    <a href="/Cart/ViewCart" class="btn btn-primary">前往購物車</a>
-</div>
+<div class="d-flex">
+    <aside style="min-width:220px;" class="border-end pe-2">
+        <partial name="_CategoryList" model="cats" />
+    </aside>
 
-<div class="row">
-    @foreach (var product in Model)
-    {
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <a href="@Url.Action("Details", "Product", new { id = product.Id })">
-                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height:200px; object-fit:contain; background:#fff;">
-                </a>
-                <div class="card-body">
-                    <h5>@product.Name</h5>
-                    <p class="text-danger">@product.Price.ToString("C")</p>
-                    <a href="@Url.Action("AddToCart", "Cart", new { id = product.Id })" class="btn btn-primary">加入購物車</a>
+    <div class="flex-grow-1 ps-3">
+
+        <div id="adCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#adCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#adCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#adCarousel" data-bs-slide-to="2"></button>
+            </div>
+
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="28">
+                        <img src="~/images/ads/banner1.jpg"
+                             class="d-block w-100"
+                             style="max-height:350px; object-fit:contain; background:#fff;" />
+                    </a>
                 </div>
-            </div>  
+                <div class="carousel-item">
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="19">
+                        <img src="~/images/ads/banner2.jpg"
+                             class="d-block w-100"
+                             style="max-height:350px; object-fit:contain; background:#fff;" />
+                    </a>
+                </div>
+                <div class="carousel-item">
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="20">
+                        <img src="~/images/ads/banner3.jpg"
+                             class="d-block w-100"
+                             style="max-height:350px; object-fit:contain; background:#fff;" />
+                    </a>
+                </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#adCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#adCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
         </div>
-    }
+
+        <!-- ★ 熱門商品 (若有資料才顯示) -->
+        @if (hot.Any())
+        {
+            <h2 class="mb-2 text-danger">熱門商品</h2>
+            <div class="row mb-4">
+                @foreach (var p in hot)
+                {
+                    <div class="col-md-4">
+                        <div class="card mb-3 shadow-sm border-danger">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id">
+                                <img src="@p.ImageUrl"
+                                     class="card-img-top"
+                                     style="height:200px; object-fit:contain; background:#fff;" />
+                            </a>
+                            <div class="card-body">
+                                <h5>@p.Name</h5>
+                                <p class="text-danger">@p.Price.ToString("C")</p>
+                                <a asp-controller="Cart"
+                                   asp-action="AddToCart"
+                                   asp-route-id="@p.Id"
+                                   class="btn btn-danger">立即購買</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <h2 class="mb-0 mb-3">最新商品</h2>
+
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <a href="@Url.Action("Details", "Product", new { id = product.Id })">
+                            <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height:200px; object-fit:contain; background:#fff;">
+                        </a>
+                        <div class="card-body">
+                            <h5>@product.Name</h5>
+                            <p class="text-danger">@product.Price.ToString("C")</p>
+                            <a href="@Url.Action("AddToCart", "Cart", new { id = product.Id })" class="btn btn-primary">加入購物車</a>
+                        </div>
+                    </div>  
+                </div>
+            }
+        </div>
+    </div>
 </div>

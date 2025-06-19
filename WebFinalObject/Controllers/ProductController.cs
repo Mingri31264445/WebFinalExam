@@ -186,6 +186,40 @@ namespace WebFinalExam.Controllers
             return RedirectToAction("MyStore");
         }
 
+        [HttpGet]
+        public PartialViewResult CategoryList()
+        {
+            var cats = _context.Product
+                           .Where(p => p.IsActive)              // 若沒有 IsActive 就拿掉
+                           .Select(p => p.Category)
+                           .Distinct()
+                           .OrderBy(c => c)
+                           .ToList();
+
+            return PartialView("_CategoryList", cats);
+        }
+
+        /* (B) 顯示某分類商品 */
+        [HttpGet]
+        public IActionResult Category(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return RedirectToAction("Index", "Home");
+
+            ViewBag.Categories = _context.Product
+                             .Where(p => p.IsActive)
+                             .Select(p => p.Category)
+                             .Distinct()
+                             .OrderBy(c => c)
+                             .ToList();
+
+            var list = _context.Product
+                           .Where(p => p.IsActive && p.Category == name)
+                           .ToList();
+
+            ViewBag.CategoryName = name;
+            return View("~/Views/Home/Index.cshtml", list);         // 直接重用原 Index.cshtml
+        }
+
 
     }
 }
